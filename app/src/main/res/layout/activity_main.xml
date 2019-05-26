@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:orientation="vertical"
+    >
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/mainToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:titleTextColor="@android:color/white">
+
+    </android.support.v7.widget.Toolbar>
+
+    <LinearLayout
+        android:id="@+id/listBtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="100dp"
+        >
+        <Button
+            android:id="@+id/new_card_btn"
+            android:drawableTop="@mipmap/action_add"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:text="Novo Cartão"
+            android:layout_margin="5dp"
+            android:padding="10dp"
+            android:background="@color/common_google_signin_btn_text_light"
+        />
+        <Button
+            android:id="@+id/list_my_cards"
+            android:drawableTop="@mipmap/action_my_cards"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:text="Meus Cartões"
+            android:background="@color/common_google_signin_btn_text_light"
+            android:layout_margin="5dp"
+            android:padding="10dp"
+            />
+
+        <Button
+            android:id="@+id/cards_library_btn"
+            android:drawableTop="@mipmap/action_library"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:background="@color/common_google_signin_btn_text_light"
+            android:text="Cartões Salvos"
+            android:layout_margin="5dp"
+            android:padding="10dp"
+         />
+    </LinearLayout>
+
+</RelativeLayout>

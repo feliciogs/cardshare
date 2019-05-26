@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1002029227827",
+    "firebase_url": "https://cardshare-61013.firebaseio.com",
+    "project_id": "cardshare-61013",
+    "storage_bucket": "cardshare-61013.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1002029227827:android:6bcd79ceb3608ca0",
+        "android_client_info": {
+          "package_name": "com.felicio.grupo.cardshare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1002029227827-1nsshsa8uap8los2998175rbpkguk8g1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.felicio.grupo.cardshare",
+            "certificate_hash": "b99bd38a879d36942e528445b2e2eb0abe12cc66"
+          }
+        },
+        {
+          "client_id": "1002029227827-91ocn0pq0am596q6pgem2d6vang9diuo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOLSvgoTJ8-wi3Mf_aoWBuhetvlRaUZvI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1002029227827-91ocn0pq0am596q6pgem2d6vang9diuo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">CardShare</string>
+    <string name="passHint">Senha</string>
+    <string name="emailHint">Seu Email...</string>
+    <string name="imgDescLogin">LoginPageLogo</string>
+    <string name="login_btn_acess">Entrar</string>
+    <string name="login_btn_reg">Não possui conta?Cadastre-se aqui!</string>
+    <string name="action_search_menu">Pesquisar</string>
+    <string name="action_configAccount_menu">Configurar Conta</string>
+    <string name="action_logout_menu">Sair</string>
+    <string name="reg_btn_text">Cadastrar</string>
+    <string name="reg_login_text">Já possui conta?</string>
+    <string name="reg_pass_confirm">Confirmar Senha</string>
+    <string name="login_tile">Login</string>
+    <string name="register_title">Cadastrar novo usuário</string>
+    <string name="setup_name_hint">Seu nome</string>
+    <string name="setup_btn_text">Salvar Alterações</string>
+    <string name="card_desc_hint">Adicionar Descrição</string>
+    <string name="card_desc_btn">Novo Cartão</string>
+</resources>
