@@ -30,38 +30,55 @@
         >
         <Button
             android:id="@+id/new_card_btn"
-            android:drawableTop="@mipmap/action_add"
+
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
             android:text="Novo Cartão"
             android:layout_margin="5dp"
             android:padding="10dp"
-            android:background="@color/common_google_signin_btn_text_light"
+
         />
         <Button
             android:id="@+id/list_my_cards"
-            android:drawableTop="@mipmap/action_my_cards"
+
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
             android:text="Meus Cartões"
-            android:background="@color/common_google_signin_btn_text_light"
+
             android:layout_margin="5dp"
             android:padding="10dp"
             />
 
         <Button
             android:id="@+id/cards_library_btn"
-            android:drawableTop="@mipmap/action_library"
+
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
-            android:background="@color/common_google_signin_btn_text_light"
+
             android:text="Cartões Salvos"
             android:layout_margin="5dp"
             android:padding="10dp"
          />
     </LinearLayout>
+
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/mainBottonNav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+
+        app:menu="@menu/bottom_menu" />
+
+    <FrameLayout
+        android:id="@+id/main_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/mainBottonNav"
+        android:layout_below="@+id/mainToolbar">
+
+    </FrameLayout>
 
 </RelativeLayout>

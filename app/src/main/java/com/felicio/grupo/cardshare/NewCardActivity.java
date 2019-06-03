@@ -36,16 +36,15 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 
 import id.zelory.compressor.Compressor;
 
 public class NewCardActivity extends AppCompatActivity {
 
-    private static final int MAX_LENGTH = 100;
-
     private Toolbar newCardToolbar;
     private ImageView newCardImage;
-    private EditText newCardDesc;
+    private EditText newCardDesc,newCardContact;
     private Button newCardBtn;
     private ProgressBar newCardProgress;
 
@@ -75,7 +74,8 @@ public class NewCardActivity extends AppCompatActivity {
 
         newCardImage = findViewById(R.id.new_card_image);
         newCardDesc = findViewById(R.id.new_card_desc);
-        newCardBtn = findViewById(R.id.new_card_btn);
+        newCardContact = findViewById(R.id.new_card_contact);
+        newCardBtn = findViewById(R.id.card_btn);
         newCardProgress = findViewById(R.id.new_card_progress);
 
         newCardImage.setOnClickListener(new View.OnClickListener() {
@@ -92,11 +92,14 @@ public class NewCardActivity extends AppCompatActivity {
         newCardBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String desc = newCardDesc.getText().toString();
-                if(!TextUtils.isEmpty(desc) && cardImageURI != null){
-                    newCardProgress.setVisibility(View.VISIBLE);
 
-                    final String randomName = random();
+                final String desc = newCardDesc.getText().toString();
+                final String contact = newCardContact.getText().toString();
+
+                if(!TextUtils.isEmpty(desc) && cardImageURI != null){
+                    final String randomName = UUID.randomUUID().toString();
+
+                    newCardProgress.setVisibility(View.VISIBLE);
 
                     StorageReference filePath = storageReference.child("card_images").child(randomName +".jpg");
                     filePath.putFile(cardImageURI).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
@@ -107,9 +110,9 @@ public class NewCardActivity extends AppCompatActivity {
                                 File newImageFile = new File(cardImageURI.getPath());
                                 try {
                                     compressedImageFile = new Compressor(NewCardActivity.this)
-                                            .setMaxHeight(200)
-                                            .setMaxWidth(200)
-                                            .setQuality(10)
+                                            .setMaxHeight(720)
+                                            .setMaxWidth(720)
+                                            .setQuality(50)
                                             .compressToBitmap(newImageFile);
 
 
@@ -128,12 +131,13 @@ public class NewCardActivity extends AppCompatActivity {
 
                                         String downloadthumbURI = taskSnapshot.getDownloadUrl().toString();
 
-                                        Map<String,String> cardMap = new HashMap<>();
+                                        Map<String,Object> cardMap = new HashMap<>();
                                         cardMap.put("image_url",downloadUri);
-                                        cardMap.put("thumb",downloadthumbURI);
+                                        cardMap.put("image_thumb",downloadthumbURI);
                                         cardMap.put("desc",desc);
+                                        cardMap.put("contact",contact);
                                         cardMap.put("user_id",current_user_id);
-                                        cardMap.put("timestamp",FieldValue.serverTimestamp().toString());
+                                        cardMap.put("timestamp",FieldValue.serverTimestamp());
 
                                         firebaseFirestore.collection("Cards").add(cardMap).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                                             @Override
@@ -178,6 +182,7 @@ public class NewCardActivity extends AppCompatActivity {
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
+
                 cardImageURI = result.getUri();
                 newCardImage.setImageURI(cardImageURI);
 
@@ -185,17 +190,5 @@ public class NewCardActivity extends AppCompatActivity {
                 Exception error = result.getError();
             }
         }
-    }
-
-    public static String random() {
-        Random generator = new Random();
-        StringBuilder randomStringBuilder = new StringBuilder();
-        int randomLength = generator.nextInt(MAX_LENGTH);
-        char tempChar;
-        for (int i = 0; i < randomLength; i++){
-            tempChar = (char) (generator.nextInt(96) + 32);
-            randomStringBuilder.append(tempChar);
-        }
-        return randomStringBuilder.toString();
     }
 }

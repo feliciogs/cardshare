@@ -2,6 +2,9 @@ package com.felicio.grupo.cardshare;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.os.Bundle;
@@ -26,7 +29,13 @@ public class MainActivity extends AppCompatActivity {
 
     private String current_user_id;
 
-    private Button newCardBtn;
+    private Button new_card_btn;
+
+    private BottomNavigationView mainBottomNav;
+
+    private HomeFragment homeFragment;
+    private NotificationFragment notificationFragment;
+    private AccountFragment accountFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,20 +44,47 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
 
-        mainToolbar = (Toolbar) findViewById(R.id.mainToolbar);
+        mainToolbar = findViewById(R.id.mainToolbar);
         setSupportActionBar(mainToolbar);
-        getSupportActionBar().setTitle("Home");
+        getSupportActionBar().setTitle("CardShare");
 
-        newCardBtn = findViewById(R.id.new_card_btn);
-        newCardBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent newCardIntent = new Intent(MainActivity.this, NewCardActivity.class);
-                startActivity(newCardIntent);
-            }
-        });
+        if(mAuth.getCurrentUser() != null) {
+            mainBottomNav = findViewById(R.id.mainBottonNav);
 
+            homeFragment = new HomeFragment();
+            notificationFragment = new NotificationFragment();
+            accountFragment = new AccountFragment();
 
+            replaceFragment(homeFragment);
+
+            mainBottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                    switch (menuItem.getItemId()) {
+                        case R.id.btn_bottom_home:
+                            replaceFragment(homeFragment);
+                            return true;
+                        case R.id.btn_bottom_notification:
+                            replaceFragment(notificationFragment);
+                            return true;
+                        case R.id.btn_bottom_account:
+                            replaceFragment(accountFragment);
+                            return true;
+                        default:
+                            return false;
+                    }
+                }
+            });
+
+            new_card_btn = findViewById(R.id.new_card_btn);
+            new_card_btn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent newCardIntent = new Intent(MainActivity.this, NewCardActivity.class);
+                    startActivity(newCardIntent);
+                }
+            });
+        }
     }
 
     @Override
@@ -63,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if(task.isSuccessful()){
-                        if(task.getResult().exists()){
+                        if(!task.getResult().exists()){
                             Intent setupIntent = new Intent(MainActivity.this,SetupActivity.class);
                             startActivity(setupIntent);
                             finish();
@@ -111,5 +147,12 @@ public class MainActivity extends AppCompatActivity {
     private void logout() {
         mAuth.signOut();
         redirectToLogin();
+    }
+
+    private void replaceFragment(Fragment fragment){
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.main_container,fragment);
+        fragmentTransaction.commit();
+
     }
 }

@@ -1,4 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item
+        android:id="@+id/btn_bottom_home"
+        android:icon="@drawable/ic_home"
+        android:title="@string/bottom_cards_btn" />
+    <item
+        android:id="@+id/btn_bottom_notification"
+        android:icon="@drawable/ic_notification"
+        android:title="@string/bottom_notification_btn" />
+    <item
+        android:id="@+id/btn_bottom_account"
+        android:icon="@drawable/ic_person"
+        android:title="@string/bottom_account_btn" />
 </menu>
