@@ -6,7 +6,8 @@
     <string name="login_btn_acess">Entrar</string>
     <string name="login_btn_reg">Não possui conta?Cadastre-se aqui!</string>
     <string name="action_search_menu">Pesquisar</string>
-    <string name="action_configAccount_menu">Configurar Conta</string>
+    <string name="action_configAccount">Configurar Conta</string>
+    <string name="action_newCard">Novo Cartão</string>
     <string name="action_logout_menu">Sair</string>
     <string name="reg_btn_text">Cadastrar</string>
     <string name="reg_login_text">Já possui conta?</string>
@@ -18,7 +19,7 @@
     <string name="card_desc_hint">Adicionar Descrição</string>
     <string name="card_desc_btn">Novo Cartão</string>
     <string name="bottom_cards_btn">Meus Cartões</string>
-    <string name="bottom_notification_btn">Notificações</string>
+    <string name="bottom_home_btn">Home</string>
     <string name="bottom_account_btn">Minha Conta</string>
 
     <!-- TODO: Remove or change this placeholder text -->

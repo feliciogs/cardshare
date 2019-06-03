@@ -4,12 +4,12 @@
 
     <item
         android:id="@+id/btn_bottom_home"
-        android:icon="@drawable/ic_home"
+        android:icon="@drawable/ic_card"
         android:title="@string/bottom_cards_btn" />
     <item
         android:id="@+id/btn_bottom_notification"
-        android:icon="@drawable/ic_notification"
-        android:title="@string/bottom_notification_btn" />
+        android:icon="@drawable/ic_home"
+        android:title="@string/bottom_home_btn" />
     <item
         android:id="@+id/btn_bottom_account"
         android:icon="@drawable/ic_person"

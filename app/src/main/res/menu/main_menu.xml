@@ -8,8 +8,12 @@
         android:title="@string/action_search_menu"
         app:showAsAction="always" />
     <item
+        android:id="@+id/action_newcard_btn"
+        android:title="@string/action_newCard" />
+    <item
         android:id="@+id/action_setting_btn"
-        android:title="@string/action_configAccount_menu" />
+        android:title="@string/action_configAccount" />
+
     <item
         android:id="@+id/action_logout"
         android:title="@string/action_logout_menu" />

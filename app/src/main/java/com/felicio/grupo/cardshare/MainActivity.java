@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
+            /*
             new_card_btn = findViewById(R.id.new_card_btn);
             new_card_btn.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -84,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(newCardIntent);
                 }
             });
+            */
         }
     }
 
@@ -139,6 +141,10 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(setupIntent);
                 return true;
 
+            case R.id.action_newcard_btn:
+                Intent newCardIntent = new Intent(MainActivity.this, NewCardActivity.class);
+                startActivity(newCardIntent);
+                return true;
             default:
                 return false;
         }
