@@ -16,7 +16,7 @@
     <string name="register_title">Cadastrar novo usuário</string>
     <string name="setup_name_hint">Seu nome</string>
     <string name="setup_btn_text">Salvar Alterações</string>
-    <string name="card_desc_hint">Adicionar Descrição</string>
+    <string name="card_desc_hint">Nome...</string>
     <string name="card_desc_btn">Novo Cartão</string>
     <string name="bottom_cards_btn">Meus Cartões</string>
     <string name="bottom_home_btn">Home</string>
@@ -24,5 +24,8 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="new_card_contact">Contato</string>
+    <string name="new_card_contact">Telefone...</string>
+    <string name="newcard_text_cargo" >Cargo/Profissão...</string>
+    <string name="newcard_text_email">Email...</string>
+    <string name="newcard_text_endereco">Endereço...</string>
 </resources>

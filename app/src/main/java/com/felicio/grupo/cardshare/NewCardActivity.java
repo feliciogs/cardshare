@@ -44,7 +44,7 @@ public class NewCardActivity extends AppCompatActivity {
 
     private Toolbar newCardToolbar;
     private ImageView newCardImage;
-    private EditText newCardDesc,newCardContact;
+    private EditText newCardName,newCardContact,newCardCargo,newCardEmail,newCardEndereco;
     private Button newCardBtn;
     private ProgressBar newCardProgress;
 
@@ -72,9 +72,13 @@ public class NewCardActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Criar um novo cartão");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        newCardImage = findViewById(R.id.new_card_image);
-        newCardDesc = findViewById(R.id.new_card_desc);
+        newCardName = findViewById(R.id.new_card_desc);
+        newCardCargo = findViewById(R.id.new_card_cargo);
         newCardContact = findViewById(R.id.new_card_contact);
+        newCardEmail = findViewById(R.id.new_card_email);
+        newCardEndereco = findViewById(R.id.new_card_endereco);
+
+        newCardImage = findViewById(R.id.new_card_image);
         newCardBtn = findViewById(R.id.card_btn);
         newCardProgress = findViewById(R.id.new_card_progress);
 
@@ -93,8 +97,11 @@ public class NewCardActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                final String desc = newCardDesc.getText().toString();
+                final String desc = newCardName.getText().toString();
+                final String cargo = newCardCargo.getText().toString();
                 final String contact = newCardContact.getText().toString();
+                final String email = newCardEmail.getText().toString();
+                final String endereco = newCardEndereco.getText().toString();
 
                 if(!TextUtils.isEmpty(desc) && cardImageURI != null){
                     final String randomName = UUID.randomUUID().toString();
@@ -136,6 +143,9 @@ public class NewCardActivity extends AppCompatActivity {
                                         cardMap.put("image_thumb",downloadthumbURI);
                                         cardMap.put("desc",desc);
                                         cardMap.put("contact",contact);
+                                        cardMap.put("cargo",cargo);
+                                        cardMap.put("email",email);
+                                        cardMap.put("endereco",endereco);
                                         cardMap.put("user_id",current_user_id);
                                         cardMap.put("timestamp",FieldValue.serverTimestamp());
 
@@ -182,10 +192,8 @@ public class NewCardActivity extends AppCompatActivity {
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
-
                 cardImageURI = result.getUri();
                 newCardImage.setImageURI(cardImageURI);
-
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
             }

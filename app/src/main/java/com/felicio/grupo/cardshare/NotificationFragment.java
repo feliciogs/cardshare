@@ -69,6 +69,7 @@ public class NotificationFragment extends Fragment {
                                 CardClass cardClass = doc.getDocument().toObject(CardClass.class);
                                 if(!cardClass.getUser_id().equals(userID)){
                                     card_list.add(cardClass);
+                                    cardRecyclerAdapter.userCurrentID = userID;
                                     cardRecyclerAdapter.notifyDataSetChanged();
                                 }
                             }

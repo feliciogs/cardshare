@@ -58,6 +58,7 @@
                 android:layout_marginTop="40dp"
                 android:scaleType="centerCrop"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/card_user_image"
                 tools:srcCompat="@color/common_google_signin_btn_text_light_default" />
@@ -67,8 +68,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
-                android:layout_marginTop="164dp"
-                android:text="Descrição do cartão"
+                android:layout_marginTop="28dp"
+                android:text="Nome"
                 android:textAllCaps="true"
                 android:textColor="@android:color/white"
                 app:layout_constraintStart_toStartOf="@+id/card_image"
@@ -79,8 +80,44 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
-                android:layout_marginTop="124dp"
-                android:text="Descrição do cartão"
+                android:layout_marginTop="88dp"
+                android:text="@string/new_card_contact"
+                android:textAllCaps="true"
+                android:textColor="@android:color/white"
+                app:layout_constraintStart_toStartOf="@+id/card_image"
+                app:layout_constraintTop_toTopOf="@+id/card_image" />
+
+            <TextView
+                android:id="@+id/card_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="120dp"
+                android:text="@string/emailHint"
+                android:textAllCaps="true"
+                android:textColor="@android:color/white"
+                app:layout_constraintStart_toStartOf="@+id/card_image"
+                app:layout_constraintTop_toTopOf="@+id/card_image" />
+
+            <TextView
+                android:id="@+id/card_endereco"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="152dp"
+                android:text="@string/newcard_text_endereco"
+                android:textAllCaps="true"
+                android:textColor="@android:color/white"
+                app:layout_constraintStart_toStartOf="@+id/card_image"
+                app:layout_constraintTop_toTopOf="@+id/card_image" />
+
+            <TextView
+                android:id="@+id/card_cargo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="60dp"
+                android:text="@string/newcard_text_cargo"
                 android:textAllCaps="true"
                 android:textColor="@android:color/white"
                 app:layout_constraintStart_toStartOf="@+id/card_image"
