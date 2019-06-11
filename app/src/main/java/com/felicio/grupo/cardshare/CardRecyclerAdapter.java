@@ -4,13 +4,16 @@ package com.felicio.grupo.cardshare;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
@@ -27,14 +30,25 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -105,23 +119,35 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
 
     public class ViewHolder extends RecyclerView.ViewHolder{
         private View mView;
-        private TextView descView,cargoView,contactView,emailView,enderecoView;
-        private TextView cardDate;
+        private TextView descView,cargoView,contactView,emailView,enderecoView,cardDate,user_name;
         private ImageView cardImageView;
 
-        private TextView user_name;
         private CircleImageView user_image;
-
         private Bitmap bitmap;
+        private Bitmap bitmapQR;
+        public final static int QRcodeWidth = 500 ;
+
+        private Uri qrImageURI = null;
+        private StorageReference storageReference;
+        private FirebaseFirestore firebaseFirestore;
+        private FirebaseAuth firebaseAuth;
+        private String current_user_id;
 
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             mView = itemView;
 
+            storageReference = FirebaseStorage.getInstance().getReference();
+            firebaseFirestore = FirebaseFirestore.getInstance();
+            firebaseAuth = FirebaseAuth.getInstance();
+            current_user_id = firebaseAuth.getCurrentUser().getUid();
+
+
             mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    final String randomName = UUID.randomUUID().toString();
                     CardView savingLayout = mView.findViewById(R.id.main_card_list);
                     File file = saveBitMap(mView.getContext(), savingLayout);
                     if (file != null) {
@@ -130,11 +156,30 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
                         Log.i("TAG", "Oops! Image could not be saved.");
                     }
 
-                    Toast.makeText(mView.getContext(), "Teste", Toast.LENGTH_SHORT).show();
                     AlertDialog.Builder mBuilder = new AlertDialog.Builder(mView.getContext());
                     View dView = LayoutInflater.from(mView.getContext()).inflate(R.layout.dialog_qrcode,null);
-                    ImageView imageQR = dView.findViewById(R.id.imageQR);
-                    imageQR.setImageBitmap(bitmap);
+                    final ImageView imageQR = dView.findViewById(R.id.imageQR);
+
+                    qrImageURI = bitmapToUriConverter(bitmap);
+
+                    StorageReference filePath = storageReference.child("cards_qrcode").child(randomName +".jpg");
+                    filePath.putFile(qrImageURI).addOnCompleteListener(
+                            new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                    final String downloadQRImage;
+                                    if(task.isSuccessful()){
+                                        downloadQRImage = task.getResult().getDownloadUrl().toString();
+                                        try {
+                                            bitmapQR = TextToImageEncode(downloadQRImage);
+                                            imageQR.setImageBitmap(bitmapQR);
+                                            Toast.makeText(mView.getContext(), " ", Toast.LENGTH_SHORT).show();
+                                        } catch (WriterException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }
+                            });
 
                     mBuilder.setView(dView);
                     AlertDialog dialog = mBuilder.create();
@@ -142,6 +187,59 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
                 }
             });
 
+        }
+
+        public Uri bitmapToUriConverter(Bitmap mBitmap) {
+            Uri uri = null;
+            try {
+                final BitmapFactory.Options options = new BitmapFactory.Options();
+                // Calculate inSampleSize
+                options.inSampleSize = calculateInSampleSize(options, 100, 100);
+
+                // Decode bitmap with inSampleSize set
+                options.inJustDecodeBounds = false;
+                Bitmap newBitmap = Bitmap.createScaledBitmap(mBitmap, 200, 200,
+                        true);
+                File file = new File(mView.getContext().getFilesDir(), "Image"
+                        + new Random().nextInt() + ".jpeg");
+                FileOutputStream out = mView.getContext().openFileOutput(file.getName(),
+                        Context.MODE_PRIVATE);
+                newBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                out.flush();
+                out.close();
+                //get absolute path
+                String realPath = file.getAbsolutePath();
+                File f = new File(realPath);
+                uri = Uri.fromFile(f);
+
+            } catch (Exception e) {
+                Log.e("Your Error Message", e.getMessage());
+            }
+            return uri;
+        }
+
+
+        public  int calculateInSampleSize(
+                BitmapFactory.Options options, int reqWidth, int reqHeight) {
+            // Raw height and width of image
+            final int height = options.outHeight;
+            final int width = options.outWidth;
+            int inSampleSize = 1;
+
+            if (height > reqHeight || width > reqWidth) {
+
+                final int halfHeight = height / 2;
+                final int halfWidth = width / 2;
+
+                // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+                // height and width larger than the requested height and width.
+                while ((halfHeight / inSampleSize) >= reqHeight
+                        && (halfWidth / inSampleSize) >= reqWidth) {
+                    inSampleSize *= 2;
+                }
+            }
+
+            return inSampleSize;
         }
 
         public void setCargoText(String text){
@@ -177,6 +275,12 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
             cardDate = mView.findViewById(R.id.card_user_data);
             cardDate.setText(date);
         }
+
+        public void setDescText(String text){
+            descView = mView.findViewById(R.id.card_desc);
+            descView.setText(text);
+        }
+
         public void setUserData(String name, String image){
             user_name = mView.findViewById(R.id.card_user_name);
             user_image = mView.findViewById(R.id.card_user_image);
@@ -241,9 +345,38 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
             }
         }
 
-        public void setDescText(String text){
-            descView = mView.findViewById(R.id.card_desc);
-            descView.setText(text);
+        private Bitmap TextToImageEncode(String Value) throws WriterException {
+            BitMatrix bitMatrix;
+            try {
+                bitMatrix = new MultiFormatWriter().encode(
+                        Value,
+                        BarcodeFormat.DATA_MATRIX.QR_CODE,
+                        QRcodeWidth, QRcodeWidth, null
+                );
+
+            } catch (IllegalArgumentException Illegalargumentexception) {
+
+                return null;
+            }
+            int bitMatrixWidth = bitMatrix.getWidth();
+
+            int bitMatrixHeight = bitMatrix.getHeight();
+
+            int[] pixels = new int[bitMatrixWidth * bitMatrixHeight];
+            int colorBlack = ContextCompat.getColor(context, R.color.black);
+            int colorWhite = ContextCompat.getColor(context, R.color.white);
+
+            for (int y = 0; y < bitMatrixHeight; y++) {
+                int offset = y * bitMatrixWidth;
+
+                for (int x = 0; x < bitMatrixWidth; x++) {
+                    pixels[offset + x] = bitMatrix.get(x, y) ? colorBlack : colorWhite;
+                }
+            }
+            Bitmap bitmap = Bitmap.createBitmap(bitMatrixWidth, bitMatrixHeight, Bitmap.Config.ARGB_4444);
+
+            bitmap.setPixels(pixels, 0, 500, 0, 0, bitMatrixWidth, bitMatrixHeight);
+            return bitmap;
         }
 
     }
