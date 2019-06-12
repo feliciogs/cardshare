@@ -4,6 +4,7 @@ import java.util.Date;
 
 public class CardClass {
 
+    public String card_id;
     public String user_id;
     public String image_url;
     public String desc,cargo,contact,email,endereco;
@@ -12,7 +13,8 @@ public class CardClass {
 
     public CardClass(){}
 
-    public CardClass(String user_id, String image_url, String desc, String image_thumb,Date timestamp,String contact,String cargo,String email,String endereco) {
+    public CardClass(String card_id,String user_id, String image_url, String desc, String image_thumb,Date timestamp,String contact,String cargo,String email,String endereco) {
+        this.card_id = card_id;
         this.user_id = user_id;
         this.image_url = image_url;
         this.desc = desc;
@@ -23,6 +25,15 @@ public class CardClass {
         this.image_thumb = image_thumb;
         this.timestamp = timestamp;
     }
+
+    public String getCard_id() {
+        return card_id;
+    }
+
+    public void setCard_id(String card_id) {
+        this.card_id = card_id;
+    }
+
     public String getUser_id() {
         return user_id;
     }

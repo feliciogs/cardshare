@@ -1,6 +1,7 @@
 package com.felicio.grupo.cardshare;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,6 +31,7 @@ import java.util.List;
 public class HomeFragment extends Fragment {
 
     private RecyclerView card_list_view;
+    private Button btn_homeNewCard;
     private List<CardClass> card_list;
     private String userID;
     private FirebaseFirestore firebaseFirestore;
@@ -49,6 +52,7 @@ public class HomeFragment extends Fragment {
 
         card_list = new ArrayList<>();
         card_list_view = view.findViewById(R.id.card_list_view);
+        btn_homeNewCard = view.findViewById(R.id.btn_home_newcard);
         firebaseAuth = FirebaseAuth.getInstance();
         cardRecyclerAdapter = new CardRecyclerAdapter(card_list);
         card_list_view.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -70,6 +74,7 @@ public class HomeFragment extends Fragment {
                             if (doc.getType() == DocumentChange.Type.ADDED) {
                                 CardClass cardClass = doc.getDocument().toObject(CardClass.class);
                                 if(cardClass.getUser_id().equals(userID)){
+                                    cardClass.setCard_id(doc.getDocument().getId());
                                     card_list.add(cardClass);
                                     cardRecyclerAdapter.userCurrentID = userID;
                                     cardRecyclerAdapter.notifyDataSetChanged();
@@ -80,6 +85,14 @@ public class HomeFragment extends Fragment {
             }});
             // Inflate the layout for this fragment
         }
+        btn_homeNewCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent newCardIntent = new Intent(view.getContext(), NewCardActivity.class);
+                startActivity(newCardIntent);
+            }
+        });
+
         return view;
     }
 

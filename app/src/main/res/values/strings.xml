@@ -17,7 +17,7 @@
     <string name="setup_name_hint">Seu nome</string>
     <string name="setup_btn_text">Salvar Alterações</string>
     <string name="card_desc_hint">Nome...</string>
-    <string name="card_desc_btn">Novo Cartão</string>
+    <string name="card_desc_btn">Criar novo cartão</string>
     <string name="bottom_cards_btn">Meus Cartões</string>
     <string name="bottom_home_btn">Home</string>
     <string name="bottom_account_btn">Minha Conta</string>

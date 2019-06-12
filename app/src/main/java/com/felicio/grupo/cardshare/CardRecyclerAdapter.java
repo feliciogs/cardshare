@@ -3,6 +3,9 @@ package com.felicio.grupo.cardshare;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -21,7 +24,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,8 +34,11 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -58,6 +66,7 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
     public Context context;
     public String userCurrentID;
     public String user_id;
+    public String cardID_data;
 
     public FirebaseFirestore firebaseFirestore;
 
@@ -75,7 +84,16 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull final ViewHolder viewHolder, final int i) {
+        /*
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cardID_data = card_list.get(i).getCard_id();
+            }
+        });
+        */
+
         String desc_data = card_list.get(i).getDesc();
         viewHolder.setDescText(desc_data);
 
@@ -117,6 +135,7 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
         return card_list.size();
     }
 
+
     public class ViewHolder extends RecyclerView.ViewHolder{
         private View mView;
         private TextView descView,cargoView,contactView,emailView,enderecoView,cardDate,user_name;
@@ -129,7 +148,6 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
 
         private Uri qrImageURI = null;
         private StorageReference storageReference;
-        private FirebaseFirestore firebaseFirestore;
         private FirebaseAuth firebaseAuth;
         private String current_user_id;
 
@@ -147,6 +165,7 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
             mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    final String[] shareLink = new String[1];
                     final String randomName = UUID.randomUUID().toString();
                     CardView savingLayout = mView.findViewById(R.id.main_card_list);
                     File file = saveBitMap(mView.getContext(), savingLayout);
@@ -157,11 +176,15 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
                     }
 
                     AlertDialog.Builder mBuilder = new AlertDialog.Builder(mView.getContext());
-                    View dView = LayoutInflater.from(mView.getContext()).inflate(R.layout.dialog_qrcode,null);
+                    final View dView = LayoutInflater.from(mView.getContext()).inflate(R.layout.dialog_qrcode,null);
                     final ImageView imageQR = dView.findViewById(R.id.imageQR);
+                    final Button btn_share = dView.findViewById(R.id.btn_share);
+                    final ProgressBar loarQRProgress = dView.findViewById(R.id.loarQRProgress);
+                    final Button deleteCard = dView.findViewById(R.id.btn_deletecard);
 
                     qrImageURI = bitmapToUriConverter(bitmap);
 
+                    loarQRProgress.setVisibility(View.VISIBLE);
                     StorageReference filePath = storageReference.child("cards_qrcode").child(randomName +".jpg");
                     filePath.putFile(qrImageURI).addOnCompleteListener(
                             new OnCompleteListener<UploadTask.TaskSnapshot>() {
@@ -170,10 +193,11 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
                                     final String downloadQRImage;
                                     if(task.isSuccessful()){
                                         downloadQRImage = task.getResult().getDownloadUrl().toString();
+                                        shareLink[0] = downloadQRImage;
                                         try {
                                             bitmapQR = TextToImageEncode(downloadQRImage);
                                             imageQR.setImageBitmap(bitmapQR);
-                                            Toast.makeText(mView.getContext(), " ", Toast.LENGTH_SHORT).show();
+                                            loarQRProgress.setVisibility(View.INVISIBLE);
                                         } catch (WriterException e) {
                                             e.printStackTrace();
                                         }
@@ -182,11 +206,50 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
                             });
 
                     mBuilder.setView(dView);
-                    AlertDialog dialog = mBuilder.create();
+                    final AlertDialog dialog = mBuilder.create();
                     dialog.show();
+
+                    btn_share.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            try {
+                                final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                intent.putExtra(Intent.EXTRA_TEXT,shareLink[0]);
+                                intent.setType("text/plain");
+                                context.startActivity(Intent.createChooser(intent, "Enviar cartão via"));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
+                    deleteCard.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            DocumentReference docRef = firebaseFirestore.collection("Cards").document(cardID_data);
+                            docRef.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if(task.isSuccessful()){
+                                        Toast.makeText(dView.getContext(), "Cartão excluido com sucesso!", Toast.LENGTH_SHORT).show();
+                                        redirectToMain();
+                                    }else {
+                                        Toast.makeText(dView.getContext(), "Erro ao tentar excluir o cartão.", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+
+                        }
+                    });
+
                 }
             });
 
+        }
+        private void redirectToMain(){
+            Intent mainIntent = new Intent(mView.getContext(), MainActivity.class);
+            mView.getContext().startActivity(mainIntent);
         }
 
         public Uri bitmapToUriConverter(Bitmap mBitmap) {
@@ -198,7 +261,7 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
 
                 // Decode bitmap with inSampleSize set
                 options.inJustDecodeBounds = false;
-                Bitmap newBitmap = Bitmap.createScaledBitmap(mBitmap, 200, 200,
+                Bitmap newBitmap = Bitmap.createScaledBitmap(mBitmap, 500, 300,
                         true);
                 File file = new File(mView.getContext().getFilesDir(), "Image"
                         + new Random().nextInt() + ".jpeg");
