@@ -81,8 +81,26 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/mainBottonNav"
-        android:layout_below="@+id/mainToolbar">
+        android:layout_below="@+id/mainToolbar"
+        android:layout_marginTop="-2dp"
+        android:layout_marginBottom="2dp">
 
     </FrameLayout>
+
+    <ProgressBar
+        android:id="@+id/progressLoad"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/main_container"
+        android:layout_alignBottom="@+id/main_container"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="181dp"
+        android:layout_marginTop="252dp"
+        android:layout_marginEnd="182dp"
+        android:layout_marginBottom="320dp"
+        android:indeterminate="true"
+        android:visibility="invisible" />
 
 </RelativeLayout>

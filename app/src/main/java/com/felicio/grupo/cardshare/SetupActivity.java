@@ -126,6 +126,8 @@ public class SetupActivity extends AppCompatActivity {
                         }else{
                         storeFirestoreFirebase(null,user_name);
                     }
+                }else{
+                    Toast.makeText(SetupActivity.this, "Por favor selecione uma imagem e informe seu nome.", Toast.LENGTH_LONG).show();
                 }
             }
         });

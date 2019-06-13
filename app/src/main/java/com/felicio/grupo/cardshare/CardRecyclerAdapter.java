@@ -4,8 +4,6 @@ package com.felicio.grupo.cardshare;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -14,7 +12,6 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
@@ -27,19 +24,17 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -49,12 +44,13 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
@@ -66,8 +62,10 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
     public Context context;
     public String userCurrentID;
     public String user_id;
+    public String refDelete;
 
     public FirebaseFirestore firebaseFirestore;
+    public String currentFragment;
 
     public CardRecyclerAdapter(List<CardClass> card_list){
         this.card_list = card_list;
@@ -118,9 +116,11 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
             }
         });
 
-        long milliseconds = card_list.get(i).getTimestamp().getTime();
-        String dateString = DateFormat.format("dd/MM/yyyy", new Date(milliseconds)).toString();
-        viewHolder.setTime(dateString);
+        if(card_list.get(i).getTimestamp() != null){
+            long milliseconds = card_list.get(i).getTimestamp().getTime();
+            String dateString = DateFormat.format("dd/MM/yyyy", new Date(milliseconds)).toString();
+            viewHolder.setTime(dateString);
+        }
     }
 
     @Override
@@ -132,7 +132,10 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
     public class ViewHolder extends RecyclerView.ViewHolder{
         private View mView;
         private TextView descView,cargoView,contactView,emailView,enderecoView,cardDate,user_name,cardID;
+        private TextView addImageView,addDescView,addCargoView,addContactView,addEmailView,addEnderecoView;
         private ImageView cardImageView;
+
+        private Button btn_savecard_contact;
 
         private CircleImageView user_image;
         private Bitmap bitmap;
@@ -142,18 +145,72 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
         private Uri qrImageURI = null;
         private StorageReference storageReference;
         private FirebaseAuth firebaseAuth;
+
         private String current_user_id;
 
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             mView = itemView;
+            btn_savecard_contact = mView.findViewById(R.id.btn_savecard_contact);
+            user_name = mView.findViewById(R.id.card_user_name);
+            user_image = mView.findViewById(R.id.card_user_image);
+            cardDate = mView.findViewById(R.id.card_user_data);
+
+            if(currentFragment.equals("NotificationFragment")){
+                btn_savecard_contact.setVisibility(View.VISIBLE);
+            }else{
+                user_image.setVisibility(View.INVISIBLE);
+                user_name.setVisibility(View.INVISIBLE);
+                cardDate.setVisibility(View.INVISIBLE);
+            }
 
             storageReference = FirebaseStorage.getInstance().getReference();
             firebaseFirestore = FirebaseFirestore.getInstance();
             firebaseAuth = FirebaseAuth.getInstance();
             current_user_id = firebaseAuth.getCurrentUser().getUid();
 
+            btn_savecard_contact.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    addDescView = mView.findViewById(R.id.card_desc);
+                    addImageView = mView.findViewById(R.id.card_imageURI);
+                    addCargoView = mView.findViewById(R.id.card_cargo);
+                    addContactView = mView.findViewById(R.id.card_contact);
+                    addEmailView = mView.findViewById(R.id.card_email);
+                    addEnderecoView = mView.findViewById(R.id.card_endereco);
+
+                    final String desc = addDescView.getText().toString();
+                    final String downloadURI = addImageView.getText().toString();
+                    final String colectionID = current_user_id;
+                    final String cardCargo = addCargoView.getText().toString();
+                    final String cardContact = addContactView.getText().toString();
+                    final String cardEmail = addEmailView.getText().toString();
+                    final String cardEndereco = addEnderecoView.getText().toString();
+
+                    Map<String, Object> addCardMap = new HashMap<>();
+                    addCardMap.put("image_url",downloadURI);
+                    addCardMap.put("image_thumb",downloadURI);
+                    addCardMap.put("desc",desc);
+                    addCardMap.put("contact",cardContact);
+                    addCardMap.put("cargo",cardCargo);
+                    addCardMap.put("email",cardEmail);
+                    addCardMap.put("endereco",cardEndereco);
+                    addCardMap.put("user_id",colectionID);
+                    addCardMap.put("timestamp", FieldValue.serverTimestamp());
+
+                    firebaseFirestore.collection(colectionID).add(addCardMap).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentReference> task) {
+                            if(task.isSuccessful()){
+                                Toast.makeText(mView.getContext(), "Cartão adicionado aos seus contatos com sucesso!", Toast.LENGTH_SHORT).show();
+                                btn_savecard_contact.setVisibility(View.INVISIBLE);
+                            }
+                        }
+                    });
+
+                }
+            });
 
             mView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -179,6 +236,7 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
                         qrImageURI = bitmapToUriConverter(bitmap);
 
                         loarQRProgress.setVisibility(View.VISIBLE);
+
                         StorageReference filePath = storageReference.child("cards_qrcode").child(randomName + ".jpg");
                         filePath.putFile(qrImageURI).addOnCompleteListener(
                                 new OnCompleteListener<UploadTask.TaskSnapshot>() {
@@ -222,7 +280,7 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
                             @Override
                             public void onClick(View view) {
                                 String card_id = getCardIDText();
-                                DocumentReference docRef = firebaseFirestore.collection("Cards").document(card_id);
+                                DocumentReference docRef = firebaseFirestore.collection(refDelete).document(card_id);
                                 docRef.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
@@ -237,7 +295,6 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
 
                             }
                         });
-
                     }
                 }
             });
@@ -280,13 +337,13 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
 
         public void setBlogImage(String downloadUri){
             cardImageView = mView.findViewById(R.id.card_image);
-
+            addImageView = mView.findViewById(R.id.card_imageURI);
+            addImageView.setText(downloadUri);
             RequestOptions placeHolderOption = new RequestOptions();
             placeHolderOption.placeholder(R.color.common_google_signin_btn_text_light_default);
 
             Glide.with(context).applyDefaultRequestOptions(placeHolderOption).load(downloadUri).into(cardImageView);
         }
-
         public void setTime(String date){
             cardDate = mView.findViewById(R.id.card_user_data);
             cardDate.setText(date);
@@ -400,7 +457,7 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
             try {
                 final BitmapFactory.Options options = new BitmapFactory.Options();
                 // Calculate inSampleSize
-                options.inSampleSize = calculateInSampleSize(options, 100, 100);
+                options.inSampleSize = calculateInSampleSize(options, 200, 200);
 
                 // Decode bitmap with inSampleSize set
                 options.inJustDecodeBounds = false;

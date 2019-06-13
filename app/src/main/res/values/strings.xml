@@ -32,4 +32,6 @@
     <string name="dialog_qrCode_text">Compartilhar via QRCode</string>
     <string name="dialog_btnShare_text">Compartilhar link</string>
     <string name="dialog_btnDelete_text">Apagar Cartão</string>
+    <string name="newcard_description">Clique aqui para adicionar uma foto</string>
+    <string name="setup_description_image">Clique para selecionar uma imagem.</string>
 </resources>

@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -44,6 +45,7 @@ public class NewCardActivity extends AppCompatActivity {
     private Toolbar newCardToolbar;
     private ImageView newCardImage;
     private EditText newCardName,newCardContact,newCardCargo,newCardEmail,newCardEndereco;
+    private TextView text_cardTitle;
     private Button newCardBtn;
     private ProgressBar newCardProgress;
 
@@ -76,6 +78,7 @@ public class NewCardActivity extends AppCompatActivity {
         newCardContact = findViewById(R.id.new_card_contact);
         newCardEmail = findViewById(R.id.new_card_email);
         newCardEndereco = findViewById(R.id.new_card_endereco);
+        text_cardTitle = findViewById(R.id.text_cardTitle);
 
         newCardImage = findViewById(R.id.new_card_image);
         newCardBtn = findViewById(R.id.card_btn);
@@ -195,6 +198,7 @@ public class NewCardActivity extends AppCompatActivity {
             if (resultCode == RESULT_OK) {
                 cardImageURI = result.getUri();
                 newCardImage.setImageURI(cardImageURI);
+                text_cardTitle.setVisibility(View.INVISIBLE);
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
             }

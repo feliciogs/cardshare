@@ -35,11 +35,11 @@
             <TextView
                 android:id="@+id/card_user_name"
                 android:layout_width="wrap_content"
-                android:textAllCaps="false"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:text="Nome"
+                android:textAllCaps="false"
                 app:layout_constraintStart_toEndOf="@+id/card_user_image"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -66,16 +66,16 @@
 
             <TextView
                 android:id="@+id/card_desc"
-                android:textStyle="bold"
-                android:textSize="24dp"
-                android:maxLength="26"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="28dp"
+                android:maxLength="26"
                 android:text="Nome"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
+                android:textSize="24dp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@+id/card_image"
                 app:layout_constraintTop_toTopOf="@+id/card_image" />
 
@@ -108,8 +108,22 @@
                 android:id="@+id/cardID"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="328dp"
-                android:layout_marginTop="104dp"
+                android:layout_marginStart="312dp"
+                android:layout_marginTop="124dp"
+                android:text="@string/new_card_contact"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                android:visibility="invisible"
+                app:layout_constraintStart_toStartOf="@+id/card_image"
+                app:layout_constraintTop_toTopOf="@+id/card_image"
+                tools:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/card_imageURI"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="312dp"
+                android:layout_marginTop="148dp"
                 android:text="@string/new_card_contact"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
@@ -122,9 +136,9 @@
                 android:id="@+id/card_email"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLength="30"
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="125dp"
+                android:maxLength="30"
                 android:text="@string/emailHint"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
@@ -137,8 +151,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="150dp"
-                android:text="@string/newcard_text_endereco"
                 android:maxLength="40"
+                android:text="@string/newcard_text_endereco"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
                 app:layout_constraintStart_toStartOf="@+id/card_image"
@@ -146,16 +160,36 @@
 
             <TextView
                 android:id="@+id/card_cargo"
-                android:maxLength="30"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="60dp"
+                android:maxLength="30"
                 android:text="@string/newcard_text_cargo"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
                 app:layout_constraintStart_toStartOf="@+id/card_image"
                 app:layout_constraintTop_toTopOf="@+id/card_image" />
+
+            <Button
+                android:id="@+id/btn_savecard_contact"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:textColor="@color/white"
+                android:layout_marginBottom="8dp"
+                android:drawableLeft="@android:drawable/ic_menu_add"
+                android:background="@drawable/btn_shape_addcard"
+                android:text="Salvar cartão em meus contatos"
+                android:textSize="10sp"
+                android:paddingRight="5dp"
+                android:minHeight="0dp"
+                android:minWidth="0dp"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toTopOf="@+id/card_image"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </android.support.constraint.ConstraintLayout>
 

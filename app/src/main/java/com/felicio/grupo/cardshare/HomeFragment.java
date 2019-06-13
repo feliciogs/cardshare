@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,6 +33,7 @@ public class HomeFragment extends Fragment {
 
     private RecyclerView card_list_view;
     private Button btn_homeNewCard;
+    private ProgressBar bar_progress;
     private List<CardClass> card_list;
     private String userID;
     private FirebaseFirestore firebaseFirestore;
@@ -53,6 +55,8 @@ public class HomeFragment extends Fragment {
         card_list = new ArrayList<>();
         card_list_view = view.findViewById(R.id.card_list_view);
         btn_homeNewCard = view.findViewById(R.id.btn_home_newcard);
+        bar_progress = view.findViewById(R.id.bar_progress);
+
         firebaseAuth = FirebaseAuth.getInstance();
         cardRecyclerAdapter = new CardRecyclerAdapter(card_list);
         card_list_view.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -60,6 +64,7 @@ public class HomeFragment extends Fragment {
 
 
         if (firebaseAuth.getCurrentUser() != null) {
+            bar_progress.setVisibility(View.VISIBLE);
             firebaseFirestore = FirebaseFirestore.getInstance();
             userID = firebaseAuth.getCurrentUser().getUid();
 
@@ -77,10 +82,13 @@ public class HomeFragment extends Fragment {
                                     cardClass.setCard_id(doc.getDocument().getId());
                                     card_list.add(cardClass);
                                     cardRecyclerAdapter.userCurrentID = userID;
+                                    cardRecyclerAdapter.refDelete = "Cards";
+                                    cardRecyclerAdapter.currentFragment = "HomeFragment";
                                     cardRecyclerAdapter.notifyDataSetChanged();
                                 }
                             }
                         }
+                        bar_progress.setVisibility(View.INVISIBLE);
                     }
             }});
             // Inflate the layout for this fragment

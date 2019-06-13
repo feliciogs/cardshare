@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -28,10 +29,10 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseFirestore firebaseFirestore;
 
     private String current_user_id;
-
+    private ProgressBar progressLoad;
     private Button new_card_btn;
 
-    private BottomNavigationView mainBottomNav;
+    public BottomNavigationView mainBottomNav;
 
     private HomeFragment homeFragment;
     private NotificationFragment notificationFragment;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         firebaseFirestore = FirebaseFirestore.getInstance();
 
+        progressLoad = findViewById(R.id.progressLoad);
         mainToolbar = findViewById(R.id.mainToolbar);
         setSupportActionBar(mainToolbar);
         getSupportActionBar().setTitle("CardShare");
@@ -93,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        progressLoad.setVisibility(View.VISIBLE);
         if(currentUser == null){
             redirectToLogin();
         }else{
@@ -114,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
             });
             replaceFragment(homeFragment);
         }
+        progressLoad.setVisibility(View.INVISIBLE);
     }
 
     private void redirectToLogin() {
