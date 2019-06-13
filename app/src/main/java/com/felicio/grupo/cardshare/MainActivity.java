@@ -112,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             });
+            replaceFragment(homeFragment);
         }
     }
 

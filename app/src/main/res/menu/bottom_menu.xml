@@ -12,6 +12,6 @@
         android:title="@string/bottom_home_btn" />
     <item
         android:id="@+id/btn_bottom_account"
-        android:icon="@drawable/ic_person"
-        android:title="@string/bottom_account_btn" />
+        android:icon="@drawable/ic_list"
+        android:title="@string/bottom_listcards_btn" />
 </menu>

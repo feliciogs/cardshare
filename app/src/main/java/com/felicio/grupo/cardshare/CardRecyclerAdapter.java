@@ -66,7 +66,6 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
     public Context context;
     public String userCurrentID;
     public String user_id;
-    public String cardID_data;
 
     public FirebaseFirestore firebaseFirestore;
 
@@ -84,15 +83,9 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final ViewHolder viewHolder, final int i) {
-        /*
-        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                cardID_data = card_list.get(i).getCard_id();
-            }
-        });
-        */
+    public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
+        String cardID_data = card_list.get(i).getCard_id();
+        viewHolder.setCardIDText(cardID_data);
 
         String desc_data = card_list.get(i).getDesc();
         viewHolder.setDescText(desc_data);
@@ -138,7 +131,7 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
 
     public class ViewHolder extends RecyclerView.ViewHolder{
         private View mView;
-        private TextView descView,cargoView,contactView,emailView,enderecoView,cardDate,user_name;
+        private TextView descView,cargoView,contactView,emailView,enderecoView,cardDate,user_name,cardID;
         private ImageView cardImageView;
 
         private CircleImageView user_image;
@@ -165,144 +158,104 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
             mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    final String[] shareLink = new String[1];
-                    final String randomName = UUID.randomUUID().toString();
-                    CardView savingLayout = mView.findViewById(R.id.main_card_list);
-                    File file = saveBitMap(mView.getContext(), savingLayout);
-                    if (file != null) {
-                        Log.i("TAG", "Drawing saved to the gallery!");
-                    } else {
-                        Log.i("TAG", "Oops! Image could not be saved.");
-                    }
+                    if (user_id.equals(current_user_id)) {
+                        final String[] shareLink = new String[1];
+                        final String randomName = UUID.randomUUID().toString();
+                        CardView savingLayout = mView.findViewById(R.id.main_card_list);
+                        File file = saveBitMap(mView.getContext(), savingLayout);
+                        if (file != null) {
+                            Log.i("TAG", "Drawing saved to the gallery!");
+                        } else {
+                            Log.i("TAG", "Oops! Image could not be saved.");
+                        }
 
-                    AlertDialog.Builder mBuilder = new AlertDialog.Builder(mView.getContext());
-                    final View dView = LayoutInflater.from(mView.getContext()).inflate(R.layout.dialog_qrcode,null);
-                    final ImageView imageQR = dView.findViewById(R.id.imageQR);
-                    final Button btn_share = dView.findViewById(R.id.btn_share);
-                    final ProgressBar loarQRProgress = dView.findViewById(R.id.loarQRProgress);
-                    final Button deleteCard = dView.findViewById(R.id.btn_deletecard);
+                        AlertDialog.Builder mBuilder = new AlertDialog.Builder(mView.getContext());
+                        final View dView = LayoutInflater.from(mView.getContext()).inflate(R.layout.dialog_qrcode, null);
+                        final ImageView imageQR = dView.findViewById(R.id.imageQR);
+                        final Button btn_share = dView.findViewById(R.id.btn_share);
+                        final ProgressBar loarQRProgress = dView.findViewById(R.id.loarQRProgress);
+                        final Button deleteCard = dView.findViewById(R.id.btn_deletecard);
 
-                    qrImageURI = bitmapToUriConverter(bitmap);
+                        qrImageURI = bitmapToUriConverter(bitmap);
 
-                    loarQRProgress.setVisibility(View.VISIBLE);
-                    StorageReference filePath = storageReference.child("cards_qrcode").child(randomName +".jpg");
-                    filePath.putFile(qrImageURI).addOnCompleteListener(
-                            new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                                    final String downloadQRImage;
-                                    if(task.isSuccessful()){
-                                        downloadQRImage = task.getResult().getDownloadUrl().toString();
-                                        shareLink[0] = downloadQRImage;
-                                        try {
-                                            bitmapQR = TextToImageEncode(downloadQRImage);
-                                            imageQR.setImageBitmap(bitmapQR);
-                                            loarQRProgress.setVisibility(View.INVISIBLE);
-                                        } catch (WriterException e) {
-                                            e.printStackTrace();
+                        loarQRProgress.setVisibility(View.VISIBLE);
+                        StorageReference filePath = storageReference.child("cards_qrcode").child(randomName + ".jpg");
+                        filePath.putFile(qrImageURI).addOnCompleteListener(
+                                new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                        final String downloadQRImage;
+                                        if (task.isSuccessful()) {
+                                            downloadQRImage = task.getResult().getDownloadUrl().toString();
+                                            shareLink[0] = downloadQRImage;
+                                            try {
+                                                bitmapQR = TextToImageEncode(downloadQRImage);
+                                                imageQR.setImageBitmap(bitmapQR);
+                                                loarQRProgress.setVisibility(View.INVISIBLE);
+                                            } catch (WriterException e) {
+                                                e.printStackTrace();
+                                            }
                                         }
                                     }
+                                });
+
+                        mBuilder.setView(dView);
+                        final AlertDialog dialog = mBuilder.create();
+                        dialog.show();
+
+                        btn_share.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                try {
+                                    final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    intent.putExtra(Intent.EXTRA_TEXT, shareLink[0]);
+                                    intent.setType("text/plain");
+                                    context.startActivity(Intent.createChooser(intent, "Enviar cartão via"));
+                                } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
-                            });
-
-                    mBuilder.setView(dView);
-                    final AlertDialog dialog = mBuilder.create();
-                    dialog.show();
-
-                    btn_share.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            try {
-                                final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                intent.putExtra(Intent.EXTRA_TEXT,shareLink[0]);
-                                intent.setType("text/plain");
-                                context.startActivity(Intent.createChooser(intent, "Enviar cartão via"));
-                            } catch (Exception e) {
-                                e.printStackTrace();
                             }
-                        }
-                    });
+                        });
 
-                    deleteCard.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            DocumentReference docRef = firebaseFirestore.collection("Cards").document(cardID_data);
-                            docRef.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if(task.isSuccessful()){
-                                        Toast.makeText(dView.getContext(), "Cartão excluido com sucesso!", Toast.LENGTH_SHORT).show();
-                                        redirectToMain();
-                                    }else {
-                                        Toast.makeText(dView.getContext(), "Erro ao tentar excluir o cartão.", Toast.LENGTH_SHORT).show();
+                        deleteCard.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                String card_id = getCardIDText();
+                                DocumentReference docRef = firebaseFirestore.collection("Cards").document(card_id);
+                                docRef.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Toast.makeText(dView.getContext(), "Cartão excluido com sucesso!", Toast.LENGTH_SHORT).show();
+                                            redirectToMain();
+                                        } else {
+                                            Toast.makeText(dView.getContext(), "Erro ao tentar excluir o cartão.", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
-                                }
-                            });
+                                });
 
-                        }
-                    });
+                            }
+                        });
 
+                    }
                 }
             });
 
         }
+
         private void redirectToMain(){
             Intent mainIntent = new Intent(mView.getContext(), MainActivity.class);
             mView.getContext().startActivity(mainIntent);
         }
-
-        public Uri bitmapToUriConverter(Bitmap mBitmap) {
-            Uri uri = null;
-            try {
-                final BitmapFactory.Options options = new BitmapFactory.Options();
-                // Calculate inSampleSize
-                options.inSampleSize = calculateInSampleSize(options, 100, 100);
-
-                // Decode bitmap with inSampleSize set
-                options.inJustDecodeBounds = false;
-                Bitmap newBitmap = Bitmap.createScaledBitmap(mBitmap, 500, 300,
-                        true);
-                File file = new File(mView.getContext().getFilesDir(), "Image"
-                        + new Random().nextInt() + ".jpeg");
-                FileOutputStream out = mView.getContext().openFileOutput(file.getName(),
-                        Context.MODE_PRIVATE);
-                newBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-                out.flush();
-                out.close();
-                //get absolute path
-                String realPath = file.getAbsolutePath();
-                File f = new File(realPath);
-                uri = Uri.fromFile(f);
-
-            } catch (Exception e) {
-                Log.e("Your Error Message", e.getMessage());
-            }
-            return uri;
+        public void setCardIDText(String text){
+            cardID = mView.findViewById(R.id.cardID);
+            cardID.setText(text);
         }
 
-
-        public  int calculateInSampleSize(
-                BitmapFactory.Options options, int reqWidth, int reqHeight) {
-            // Raw height and width of image
-            final int height = options.outHeight;
-            final int width = options.outWidth;
-            int inSampleSize = 1;
-
-            if (height > reqHeight || width > reqWidth) {
-
-                final int halfHeight = height / 2;
-                final int halfWidth = width / 2;
-
-                // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-                // height and width larger than the requested height and width.
-                while ((halfHeight / inSampleSize) >= reqHeight
-                        && (halfWidth / inSampleSize) >= reqWidth) {
-                    inSampleSize *= 2;
-                }
-            }
-
-            return inSampleSize;
+        public String getCardIDText(){
+            cardID = mView.findViewById(R.id.cardID);
+            return cardID.getText().toString();
         }
 
         public void setCargoText(String text){
@@ -440,6 +393,59 @@ public class CardRecyclerAdapter extends RecyclerView.Adapter<CardRecyclerAdapte
 
             bitmap.setPixels(pixels, 0, 500, 0, 0, bitMatrixWidth, bitMatrixHeight);
             return bitmap;
+        }
+
+        public Uri bitmapToUriConverter(Bitmap mBitmap) {
+            Uri uri = null;
+            try {
+                final BitmapFactory.Options options = new BitmapFactory.Options();
+                // Calculate inSampleSize
+                options.inSampleSize = calculateInSampleSize(options, 100, 100);
+
+                // Decode bitmap with inSampleSize set
+                options.inJustDecodeBounds = false;
+                Bitmap newBitmap = Bitmap.createScaledBitmap(mBitmap, 500, 300,
+                        true);
+                File file = new File(mView.getContext().getFilesDir(), "Image"
+                        + new Random().nextInt() + ".jpeg");
+                FileOutputStream out = mView.getContext().openFileOutput(file.getName(),
+                        Context.MODE_PRIVATE);
+                newBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
+                out.flush();
+                out.close();
+                //get absolute path
+                String realPath = file.getAbsolutePath();
+                File f = new File(realPath);
+                uri = Uri.fromFile(f);
+
+            } catch (Exception e) {
+                Log.e("Your Error Message", e.getMessage());
+            }
+            return uri;
+        }
+
+
+        public  int calculateInSampleSize(
+                BitmapFactory.Options options, int reqWidth, int reqHeight) {
+            // Raw height and width of image
+            final int height = options.outHeight;
+            final int width = options.outWidth;
+            int inSampleSize = 1;
+
+            if (height > reqHeight || width > reqWidth) {
+
+                final int halfHeight = height / 2;
+                final int halfWidth = width / 2;
+
+                // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+                // height and width larger than the requested height and width.
+                while ((halfHeight / inSampleSize) >= reqHeight
+                        && (halfWidth / inSampleSize) >= reqWidth) {
+                    inSampleSize *= 2;
+                }
+            }
+
+            return inSampleSize;
         }
 
     }

@@ -19,8 +19,8 @@
     <string name="card_desc_hint">Nome...</string>
     <string name="card_desc_btn">Criar novo cartão</string>
     <string name="bottom_cards_btn">Meus Cartões</string>
-    <string name="bottom_home_btn">Home</string>
-    <string name="bottom_account_btn">Minha Conta</string>
+    <string name="bottom_home_btn">Feed de Cartões</string>
+    <string name="bottom_listcards_btn">Meus Contatos</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -28,4 +28,8 @@
     <string name="newcard_text_cargo" >Cargo/Profissão...</string>
     <string name="newcard_text_email">Email...</string>
     <string name="newcard_text_endereco">Endereço...</string>
+    <string name="dialog_titleCard">Opções do cartão</string>
+    <string name="dialog_qrCode_text">Compartilhar via QRCode</string>
+    <string name="dialog_btnShare_text">Compartilhar link</string>
+    <string name="dialog_btnDelete_text">Apagar Cartão</string>
 </resources>

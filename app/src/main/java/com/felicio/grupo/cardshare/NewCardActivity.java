@@ -102,7 +102,7 @@ public class NewCardActivity extends AppCompatActivity {
                 final String email = newCardEmail.getText().toString();
                 final String endereco = newCardEndereco.getText().toString();
 
-                if(!TextUtils.isEmpty(desc) && cardImageURI != null){
+                if(!TextUtils.isEmpty(desc) && !TextUtils.isEmpty(cargo) && !TextUtils.isEmpty(contact) && !TextUtils.isEmpty(email) && cardImageURI != null){
                     final String randomName = UUID.randomUUID().toString();
 
                     newCardProgress.setVisibility(View.VISIBLE);
@@ -180,6 +180,8 @@ public class NewCardActivity extends AppCompatActivity {
                             }
                         }
                     });
+                }else{
+                    Toast.makeText(NewCardActivity.this, "Por favor preencha os campos e selecione uma imagem para o cartão.", Toast.LENGTH_LONG).show();
                 }
             }
         });

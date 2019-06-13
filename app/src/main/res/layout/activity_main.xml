@@ -73,6 +73,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
 
+        android:background="?attr/colorButtonNormal"
         app:menu="@menu/bottom_menu" />
 
     <FrameLayout

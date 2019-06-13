@@ -60,6 +60,7 @@ public class SetupActivity extends AppCompatActivity {
         setSupportActionBar(setupToolBar);
         getSupportActionBar().setTitle("Configuração de Conta");
 
+
         firebaseAuth = FirebaseAuth.getInstance();
         user_id = firebaseAuth.getCurrentUser().getUid();
         firebaseFirestore = FirebaseFirestore.getInstance();
